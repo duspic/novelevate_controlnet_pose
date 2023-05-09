@@ -10,15 +10,11 @@ from PIL import Image
 from typing import List
 import numpy as np
 
-SD_15="runwayml/stable-diffusion-v1-5"
-PROTOGEN="darkstorm2150/Protogen_x5.8_Official_Release"
-MODELSHOOT="wavymulder/modelshoot"
-SD_21="stabilityai/stable-diffusion-2-1-base"
-ANIME="DGSpitzer/Cyberpunk-Anime-Diffusion"
+REALISTICVISION = "SG161222/Realistic_Vision_V2.0"
 
 class Predictor(BasePredictor):
     def setup(self):
-       self.model = Model(base_model_id=SD_21, task_name='canny')
+       self.model = Model(base_model_id=REALISTICVISION, task_name='canny')
 
     def predict(
         self,
