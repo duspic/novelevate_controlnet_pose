@@ -65,9 +65,9 @@ class Predictor(BasePredictor):
 
         # outputs = [Image.fromarray(output) for output in outputs]
 
-        all_files = os.listdir("tmp/")
+        all_files = os.listdir("./tmp/")
         existing_images = [filename for filename in all_files if filename.startswith("output_") and filename.endswith(".png")]
         num_existing_images = len(existing_images)
 
-        outputs = [output.save(f"tmp/output_{num_existing_images+i}.png") for i, output in enumerate(outputs)]
-        return [Path(f"tmp/output_{num_existing_images+i}.png") for i in range(len(outputs))]
+        outputs = [output.save(f"./tmp/output_{num_existing_images+i}.png") for i, output in enumerate(outputs)]
+        return [Path(f"./tmp/output_{num_existing_images+i}.png") for i in range(len(outputs))]
