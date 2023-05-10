@@ -62,6 +62,7 @@ class Predictor(BasePredictor):
 
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
-            
+        
+        outputs = [output.paste(input_image) for output in outputs]
         outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
         return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
