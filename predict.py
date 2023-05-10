@@ -63,6 +63,6 @@ class Predictor(BasePredictor):
         )
 
 
-
+        print(os.listdir("."))
         outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
         return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
