@@ -64,6 +64,7 @@ class Predictor(BasePredictor):
             os.mkdir("tmp")
         
         noback_img = Image.open(image)
-        outputs = [output.paste(noback_img, mask=noback_img) for output in outputs]
+        for output in outputs:
+            output.paste(noback_img, mask=noback_img)
         outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
         return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
