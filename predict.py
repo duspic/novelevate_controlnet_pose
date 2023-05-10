@@ -62,9 +62,7 @@ class Predictor(BasePredictor):
             high_threshold
         )
 
-        # outputs from list to PIL
-        outputs = [Image.fromarray(output) for output in outputs]
-        # save outputs to file
+
+
         outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
-        # return paths to output files
-        return [Path(f"tmp/output_{i}.png") for i in range(len(outputs))]
+        return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
