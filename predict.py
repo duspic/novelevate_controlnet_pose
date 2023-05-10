@@ -62,12 +62,9 @@ class Predictor(BasePredictor):
             high_threshold
         )
 
-
-        # outputs = [Image.fromarray(output) for output in outputs]
-
-        all_files = os.listdir("tmp/")
-        existing_images = [filename for filename in all_files if filename.startswith("output_") and filename.endswith(".png")]
-        num_existing_images = len(existing_images)
-
-        outputs = [output.save(f"tmp/output_{num_existing_images+i}.png") for i, output in enumerate(outputs)]
-        return [Path(f"./tmp/output_{num_existing_images+i}.png") for i in range(len(outputs))]
+        # outputs from list to PIL
+        outputs = [Image.fromarray(output) for output in outputs]
+        # save outputs to file
+        outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
+        # return paths to output files
+        return [Path(f"tmp/output_{i}.png") for i in range(len(outputs))]
