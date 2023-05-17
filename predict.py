@@ -48,7 +48,7 @@ class Predictor(BasePredictor):
         cfg_scale: float = Input(description="Scale for classifier-free guidance", default=9.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
         strength: float = Input(description="How much noise between 0.0 and 1.0", default=0.5),
-        controlnet_strength: float = Input(description="How much to follow controlnet 0-2", default=1.9)
+        controlnet_strength: float = Input(description="How much to follow controlnet between 0.0 and 2.0", default=1.9)
         
 
     ) -> List[Path]:
