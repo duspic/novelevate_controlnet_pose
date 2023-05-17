@@ -29,16 +29,16 @@ CONTROLNET_MODEL_IDS = {
     'ip2p': 'lllyasviel/control_v11e_sd15_ip2p',
     'inpaint': 'lllyasviel/control_v11e_sd15_inpaint',
 }
-
+# TODO different model
 config_dict = {
-    'SG161222/Realistic_Vision_V2.0': 'lllyasviel/control_v11p_sd15_canny',
+    'chappie90/childrens-book': 'lllyasviel/control_v11p_sd15_openpose',
 }
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'SG161222/Realistic_Vision_V2.0',
-                 task_name: str = 'canny'):
+                 base_model_id: str = 'chappie90/childrens-book',
+                 task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self.base_model_id = ''
@@ -57,12 +57,12 @@ class Model:
             base_model_id,
             safety_checker=None,
             controlnet=controlnet,
-            # torch_dtype=torch.float16
+            torch_dtype=torch.float16
             )
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
-        # if self.device.type == 'cuda':
-            # pipe.enable_xformers_memory_efficient_attention()
+        if self.device.type == 'cuda':
+            pipe.enable_xformers_memory_efficient_attention()
         pipe.to(self.device)
         torch.cuda.empty_cache()
         gc.collect()
@@ -92,7 +92,6 @@ class Model:
         model_id = CONTROLNET_MODEL_IDS[task_name]
         controlnet = ControlNetModel.from_pretrained(model_id,
                                                      torch_dtype=torch.float16)
-        # controlnet = AutoModel.from_pretrained(model_id)
         controlnet.to(self.device)
         torch.cuda.empty_cache()
         gc.collect()
@@ -129,9 +128,10 @@ class Model:
                          image=control_image).images
 
     @torch.inference_mode()
-    def process_canny(
+    def process_openpose(
         self,
         image: np.ndarray,
+        poses: np.ndarray,
         prompt: str,
         additional_prompt: str,
         negative_prompt: str,
@@ -139,21 +139,22 @@ class Model:
         image_resolution: int,
         num_steps: int,
         guidance_scale: float,
-        seed: int,
-        low_threshold: int,
-        high_threshold: int,
+        seed: int
     ) -> list[PIL.Image.Image]:
         img = resize_image(HWC3(image), image_resolution)
         H, W, C = img.shape
 
-        detected_map = cv2.Canny(img, low_threshold, high_threshold)
-        detected_map = HWC3(detected_map)
+        if poses:
+            detected_map = HWC3(poses)
+        else:
+            detected_map = self.openpose(img)
+            detected_map = HWC3(detected_map)
 
         control = torch.from_numpy(detected_map.copy()).float().cuda() / 255.0
         control = torch.stack([control for _ in range(num_images)], dim=0)
         control = einops.rearrange(control, 'b h w c -> b c h w').clone()
 
-        self.load_controlnet_weight('canny')
+        self.load_controlnet_weight('Openpose')
         results = self.run_pipe(
             prompt=self.get_prompt(prompt, additional_prompt),
             negative_prompt=negative_prompt,
@@ -164,3 +165,8 @@ class Model:
             seed=seed,
         )
         return results
+
+    def openpose(self, img, has_hand=False):
+        from annotator.openpose import apply_openpose
+        result, _ = apply_openpose(img, has_hand)
+        return [result]

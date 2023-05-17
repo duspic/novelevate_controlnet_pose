@@ -10,19 +10,19 @@ from PIL import Image
 from typing import List
 import numpy as np
 
-REALISTICVISION = "SG161222/Realistic_Vision_V2.0"
 
 class Predictor(BasePredictor):
     def setup(self):
-       self.model = Model(base_model_id=REALISTICVISION, task_name='canny')
+       self.model = Model(base_model_id="chappie90/childrens-book", task_name='Openpose')
 
     def predict(
         self,
-        image: Path = Input(description="Background-removed image"),
+        image: Path = Input(description="Input image"),
+        pose: Path = Input(description="Pose(s) to generate"),
         prompt: str = Input(description="Prompt for the model"),
         num_samples: str = Input(
             description="Number of samples (higher values may OOM)",
-            choices=['1', '4'],
+            choices=['1', '2', '3', '4'],
             default='1'
         ),
         image_resolution: str = Input(
@@ -30,23 +30,27 @@ class Predictor(BasePredictor):
             choices = ['256', '512', '768'],
             default='512'
         ),
-        low_threshold: int = Input(description="Canny line detection low threshold", default=100, ge=1, le=255), # only applicable when model type is 'canny'
-        high_threshold: int = Input(description="Canny line detection high threshold", default=200, ge=1, le=255), # only applicable when model type is 'canny'
         ddim_steps: int = Input(description="Steps", default=20),
         scale: float = Input(description="Scale for classifier-free guidance", default=9.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
         eta: float = Input(description="Controls the amount of noise that is added to the input data during the denoising diffusion process. Higher value -> more noise", default=0.0),
         a_prompt: str = Input(description="Additional text to be appended to prompt", default="RAW photo, product photography, highres, extremely detailed, best quality,  8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3,"),
         n_prompt: str = Input(description="Negative Prompt", default="poorly drawn, lowres, bad quality, worst quality, unrealistic, overexposed, underexposed, floating, blurry background"),
-        detect_resolution: int = Input(description="Resolution at which detection method will be applied)", default=512, ge=128, le=1024), # only applicable when model type is 'HED', 'seg', or 'MLSD'
+
     ) -> List[Path]:
         """Run a single prediction on the model"""
 
         input_image = Image.open(image)
-        input_image = np.array(input_image)        
+        input_image = np.array(input_image)
+        
+        if pose:
+            pose_image = Image.open(pose)
+            pose_image = np.array(pose_image)   
 
-        outputs = self.model.process_canny(
+        
+        outputs = self.model.process_openpose(
             input_image,
+            pose_image,
             prompt,
             a_prompt,
             n_prompt,
@@ -55,8 +59,6 @@ class Predictor(BasePredictor):
             ddim_steps,
             scale,
             seed,
-            low_threshold,
-            high_threshold
         )
 
 
