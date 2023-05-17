@@ -77,8 +77,8 @@ class Predictor(BasePredictor):
             image_resolution=image_resolution,
             num_steps=num_steps,
             seed=seed,
-            strength=strength
-            controlnet_conditioning_scale=controlnet_conditioning_scale
+            strength=strength,
+            controlnet_conditioning_scale=controlnet_strength,
         )
 
         if not os.path.exists("tmp"):
