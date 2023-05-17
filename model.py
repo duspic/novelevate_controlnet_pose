@@ -44,7 +44,6 @@ class Model:
         self.base_model_id = ''
         self.task_name = ''
         self.pipe = self.load_pipe(base_model_id, task_name)
-        # self.preprocessor = Preprocessor()
 
     def load_pipe(self, base_model_id: str, task_name) -> DiffusionPipeline:
         if base_model_id == self.base_model_id and task_name == self.task_name and hasattr(
