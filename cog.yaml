@@ -33,7 +33,7 @@ build:
   
   # commands run after the environment is setup
   # run:
-    - "git clone https://github.com/lucidrains/xformers.git"
+    - "git clone https://github.com/facebookresearch/xformers"
     - "cd xformers"
     - "pip install -r requirements.txt"
     - "python setup.py develop"
