@@ -53,8 +53,6 @@ class Predictor(BasePredictor):
 
     ) -> List[Path]:
         """Run a single prediction on the model"""
-        if not image.shape == controlnet_pose_image.shape == mask_image.shape:
-            raise ValueError("The mask, pose and input image must have the same shape")
         
         input_img = Image.open(image)
         input_img = np.array(input_img)
@@ -63,8 +61,10 @@ class Predictor(BasePredictor):
         pose_img = np.array(pose_img)  
         
         mask_img = Image.open(mask_image)
-        mask_img = np.array(mask_img) 
+        mask_img = np.array(mask_img)
 
+        if not input_img.shape == pose_img.shape == mask_img.shape:
+            raise ValueError("The mask, pose and input image must have the same shape")
         
         outputs = self.model.process_openpose(
             image=input_img,
@@ -79,6 +79,7 @@ class Predictor(BasePredictor):
             seed=seed,
             strength=strength,
             controlnet_conditioning_scale=controlnet_strength,
+            guidance_scale=cfg_scale
         )
 
         if not os.path.exists("tmp"):
