@@ -30,6 +30,7 @@ build:
     - "diffusers==0.16.1"
     - "opencv-utils==0.0.2"
     - "accelerate"
+    - "xformers"
   
   # commands run after the environment is setup
   # run:
