@@ -11,7 +11,7 @@ from transformers import AutoModel
 from annotator.util import resize_image, HWC3
 from diffusers import (ControlNetModel, DiffusionPipeline,
                        StableDiffusionControlNetPipeline,
-                       UniPCMultistepScheduler, DEISMultistepScheduler,
+                       UniPCMultistepScheduler,
                        EulerAncestralDiscreteScheduler)
 
 CONTROLNET_MODEL_IDS = {
@@ -31,13 +31,13 @@ CONTROLNET_MODEL_IDS = {
 }
 # TODO different model
 config_dict = {
-    'chappie90/childrens-book': 'lllyasviel/control_v11p_sd15_openpose',
+    'ogkalu/Comic-Diffusion': 'lllyasviel/control_v11p_sd15_openpose',
 }
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'chappie90/childrens-book',
+                 base_model_id: str = 'ogkalu/Comic-Diffusion',
                  task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -51,14 +51,14 @@ class Model:
                 self, 'pipe') and self.pipe is not None:
             return self.pipe
 
-        model_id = CONTROLNET_MODEL_IDS[task_name]
         controlnet = ControlNetModel.from_pretrained(config_dict[base_model_id])
-        pipe = StableDiffusionControlNetPipeline.from_pretrained(
+        pipe = DiffusionPipeline.from_pretrained(
             base_model_id,
-            safety_checker=None,
             controlnet=controlnet,
-            torch_dtype=torch.float16
-            )
+            safety_checker=None,
+            torch_dtype=torch.float16,
+            custom_pipeline="stable_diffusion_controlnet_inpaint_img2img")
+        
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
         if self.device.type == 'cuda':
@@ -109,29 +109,45 @@ class Model:
     def run_pipe(
         self,
         prompt: str,
-        negative_prompt: str,
-        control_image: PIL.Image.Image,
-        num_images: int,
-        num_steps: int,
+        image: PIL.Image.Image,
+        mask_image: PIL.Image.Image,
+        controlnet_conditioning_image: PIL.Image.Image,
+        height: int,
+        width: int,
+        num_inference_steps: int,
         guidance_scale: float,
+        negative_prompt: str,
+        num_images_per_prompt: int,
         seed: int,
-    ) -> list[PIL.Image.Image]:
+        strength: float,
+        controlnet_conditioning_scale: float=1.9,
+        ) -> list[PIL.Image.Image]:
+        
         if seed == -1:
             seed = np.random.randint(0, np.iinfo(np.int64).max)
         generator = torch.Generator().manual_seed(seed)
-        return self.pipe(prompt=prompt,
-                         negative_prompt=negative_prompt,
-                         guidance_scale=guidance_scale,
-                         num_images_per_prompt=num_images,
-                         num_inference_steps=num_steps,
-                         generator=generator,
-                         image=control_image).images
+        return self.pipe(
+            prompt=prompt,
+            image=image,
+            mask_image=mask_image,
+            controlnet_conditioning_image=controlnet_conditioning_image,
+            height=height,
+            width=width,
+            num_inference_steps=num_inference_steps,
+            guidance_scale=guidance_scale,
+            negative_prompt=negative_prompt,
+            num_images_per_prompt=num_images_per_prompt,
+            controlnet_conditioning_scale=controlnet_conditioning_scale,
+            generator=generator,
+            strength=strength
+            ).images
 
     @torch.inference_mode()
     def process_openpose(
         self,
         image: np.ndarray,
-        poses: np.ndarray,
+        mask_image: np.ndarray,
+        controlnet_conditioning_image: np.ndarray,
         prompt: str,
         additional_prompt: str,
         negative_prompt: str,
@@ -139,30 +155,35 @@ class Model:
         image_resolution: int,
         num_steps: int,
         guidance_scale: float,
-        seed: int
+        seed: int,
+        strength: float,
+        controlnet_conditioning_scale: float=1.9,
     ) -> list[PIL.Image.Image]:
         img = resize_image(HWC3(image), image_resolution)
         H, W, C = img.shape
-
-        if poses:
-            detected_map = HWC3(poses)
-        else:
-            detected_map = self.openpose(img)
-            detected_map = HWC3(detected_map)
-
+        
+        detected_map = resize_image(HWC3(controlnet_conditioning_image), image_resolution)
         control = torch.from_numpy(detected_map.copy()).float().cuda() / 255.0
         control = torch.stack([control for _ in range(num_images)], dim=0)
         control = einops.rearrange(control, 'b h w c -> b c h w').clone()
+        
+        mask = resize_image(HWC3(mask_image), image_resolution)
 
         self.load_controlnet_weight('Openpose')
         results = self.run_pipe(
-            prompt=self.get_prompt(prompt, additional_prompt),
-            negative_prompt=negative_prompt,
-            control_image=control,
-            num_images=num_images,
-            num_steps=num_steps,
+            prompt=f"{prompt}, {additional_prompt}",
+            image=img,
+            mask_image=mask,
+            controlnet_conditioning_image=control,
+            height=H,
+            width=W,
+            num_inference_steps=num_steps,
             guidance_scale=guidance_scale,
+            negative_prompt=negative_prompt,
+            num_images_per_prompt=num_images,
+            controlnet_conditioning_scale=controlnet_conditioning_scale,
             seed=seed,
+            strength=strength
         )
         return results
 

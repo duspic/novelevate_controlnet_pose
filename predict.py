@@ -13,15 +13,29 @@ import numpy as np
 
 class Predictor(BasePredictor):
     def setup(self):
-       self.model = Model(base_model_id="chappie90/childrens-book", task_name='Openpose')
+       self.model = Model()
 
     def predict(
         self,
         image: Path = Input(description="Input image"),
-        pose: Path = Input(description="Pose(s) to generate"),
+        mask_image: Path = Input(description="B/W Mask image, white will be inpainted, black remains the same"),
+        controlnet_pose_image: Path = Input(description="Openpose image with pose(s) to generate"),
         prompt: str = Input(description="Prompt for the model"),
-        num_samples: str = Input(
-            description="Number of samples (higher values may OOM)",
+        a_prompt: str = Input(description="Additional text to be appended to prompt", default="""
+                              character turnaround sheet, multiple views of the same character,
+                              children's book, kid's book, illustration, beautiful, cute,
+                              character design, innocent
+                              """),
+        n_prompt: str = Input(description="Negative Prompt", default="""
+                            NSFW, sexy, seductive, miniskirt, adult,
+                            worst quality, low quality, jpeg artifacts, ugly, 
+                            duplicate, morbid, mutilated, extra fingers, mutated hands, 
+                            poorly drawn hands, poorly drawn face, mutation, deformed, 
+                            blurry, dehydrated, bad anatomy, bad proportions, extra limbs, 
+                            disfigured, gross proportions, malformed limbs, missing arms, 
+                            missing legs, extra arms, extra legs, fused fingers, too many fingers,
+                            long neck"""),
+        num_images: int = Input(description="Number of samples (higher values may OOM)",
             choices=['1', '2', '3', '4'],
             default='1'
         ),
@@ -30,43 +44,45 @@ class Predictor(BasePredictor):
             choices = ['256', '512', '768'],
             default='512'
         ),
-        ddim_steps: int = Input(description="Steps", default=20),
-        scale: float = Input(description="Scale for classifier-free guidance", default=9.0, ge=0.1, le=30.0),
+        num_steps: int = Input(description="Steps", default=20),
+        cfg_scale: float = Input(description="Scale for classifier-free guidance", default=9.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
-        eta: float = Input(description="Controls the amount of noise that is added to the input data during the denoising diffusion process. Higher value -> more noise", default=0.0),
-        a_prompt: str = Input(description="Additional text to be appended to prompt", default="RAW photo, product photography, highres, extremely detailed, best quality,  8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3,"),
-        n_prompt: str = Input(description="Negative Prompt", default="poorly drawn, lowres, bad quality, worst quality, unrealistic, overexposed, underexposed, floating, blurry background"),
+        strength: float = Input(description="How much noise between 0.0 and 1.0", default=0.5),
+        controlnet_strength: float = Input(description="How much to follow controlnet 0-2", default=1.9)
+        
 
     ) -> List[Path]:
         """Run a single prediction on the model"""
-
-        input_image = Image.open(image)
-        input_image = np.array(input_image)
+        if not image.shape == controlnet_pose_image.shape == mask_image.shape:
+            raise ValueError("The mask, pose and input image must have the same shape")
         
-        if pose:
-            pose_image = Image.open(pose)
-            pose_image = np.array(pose_image)   
+        input_img = Image.open(image)
+        input_img = np.array(input_img)
+        
+        pose_img = Image.open(controlnet_pose_image)
+        pose_img = np.array(pose_img)  
+        
+        mask_img = Image.open(mask_image)
+        mask_img = np.array(mask_img) 
 
         
         outputs = self.model.process_openpose(
-            input_image,
-            pose_image,
-            prompt,
-            a_prompt,
-            n_prompt,
-            int(num_samples),
-            image_resolution,
-            ddim_steps,
-            scale,
-            seed,
+            image=input_img,
+            mask_image=mask_img,
+            controlnet_conditioning_image=pose_img,
+            prompt=prompt,
+            additional_prompt=a_prompt,
+            negative_prompt=n_prompt,
+            num_images=num_images,
+            image_resolution=image_resolution,
+            num_steps=num_steps,
+            seed=seed,
+            strength=strength
+            controlnet_conditioning_scale=controlnet_conditioning_scale
         )
-
 
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
         
-        noback_img = Image.open(image)
-        for output in outputs:
-            output.paste(noback_img, mask=noback_img)
         outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
         return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
