@@ -168,6 +168,7 @@ class Model:
         
         mask = resize_image(HWC3(mask_image), image_resolution)
 
+        print(f"img shape:{img.shape}, mask shape:{mask.shape}, control shape: {control.shape}")
         self.load_controlnet_weight('Openpose')
         results = self.run_pipe(
             prompt=f"{prompt}, {additional_prompt}",
