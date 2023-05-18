@@ -21,20 +21,8 @@ class Predictor(BasePredictor):
         mask_image: Path = Input(description="B/W Mask image, white will be inpainted, black remains the same"),
         controlnet_pose_image: Path = Input(description="Openpose image with pose(s) to generate"),
         prompt: str = Input(description="Prompt for the model"),
-        a_prompt: str = Input(description="Additional text to be appended to prompt", default="""
-                              character turnaround sheet, multiple views of the same character,
-                              children's book, kid's book, illustration, beautiful, cute,
-                              character design, innocent
-                              """),
-        n_prompt: str = Input(description="Negative Prompt", default="""
-                            NSFW, sexy, seductive, miniskirt, adult,
-                            worst quality, low quality, jpeg artifacts, ugly, 
-                            duplicate, morbid, mutilated, extra fingers, mutated hands, 
-                            poorly drawn hands, poorly drawn face, mutation, deformed, 
-                            blurry, dehydrated, bad anatomy, bad proportions, extra limbs, 
-                            disfigured, gross proportions, malformed limbs, missing arms, 
-                            missing legs, extra arms, extra legs, fused fingers, too many fingers,
-                            long neck"""),
+        a_prompt: str = Input(description="Additional text to be appended to prompt", default="""character turnaround sheet, multiple views of the same character,children's book, kid's book, illustration, beautiful, cute,character design, innocent"""),
+        n_prompt: str = Input(description="Negative Prompt", default="""NSFW, sexy, seductive, miniskirt, adult,worst quality, low quality, jpeg artifacts, ugly, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers,long neck"""),
         num_images: int = Input(description="Number of samples (higher values may OOM)",
             choices=['1', '2', '3', '4'],
             default='1'
@@ -47,7 +35,7 @@ class Predictor(BasePredictor):
         num_steps: int = Input(description="Steps", default=20),
         cfg_scale: float = Input(description="Scale for classifier-free guidance", default=9.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
-        strength: float = Input(description="How much noise between 0.0 and 1.0", default=0.5),
+        strength: float = Input(description="How much noise between 0.0 and 1.0", default=0.8),
         controlnet_strength: float = Input(description="How much to follow controlnet between 0.0 and 2.0", default=1.9)
         
 
