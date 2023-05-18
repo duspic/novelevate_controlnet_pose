@@ -159,12 +159,15 @@ class Model:
         controlnet_conditioning_scale: float=1.9,
     ) -> list[PIL.Image.Image]:
         img = resize_image(HWC3(image), image_resolution)
-        H, W, _ = img.shape
-        
         control = resize_image(HWC3(controlnet_conditioning_image), image_resolution)
         mask = resize_image(HWC3(mask_image), image_resolution)
 
-        print(f"img shape:{img.shape}, mask shape:{mask.shape}, control shape: {control.shape}")
+        H, W, _ = img.shape
+        
+        img = PIL.Image.fromarray(img)
+        control = PIL.Image.fromarray(control)
+        mask = PIL.Image.fromarray(mask)
+        
         self.load_controlnet_weight('Openpose')
         results = self.run_pipe(
             prompt=f"{prompt}, {additional_prompt}",
