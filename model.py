@@ -58,6 +58,7 @@ class Model:
             torch_dtype=torch.float16,
             custom_pipeline="stable_diffusion_controlnet_inpaint_img2img")
         
+        pipe.load_textual_inversion("charturnerv2.pt")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
         #if self.device.type == 'cuda':
@@ -170,7 +171,7 @@ class Model:
         
         self.load_controlnet_weight('Openpose')
         results = self.run_pipe(
-            prompt=f"{prompt}, {additional_prompt}",
+            prompt=f"charturnerv2, {prompt}, {additional_prompt}",
             image=img,
             mask_image=mask,
             controlnet_conditioning_image=control,
