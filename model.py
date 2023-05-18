@@ -159,13 +159,9 @@ class Model:
         controlnet_conditioning_scale: float=1.9,
     ) -> list[PIL.Image.Image]:
         img = resize_image(HWC3(image), image_resolution)
-        H, W, C = img.shape
+        H, W, _ = img.shape
         
-        detected_map = resize_image(HWC3(controlnet_conditioning_image), image_resolution)
-        control = torch.from_numpy(detected_map.copy()).float().cuda() / 255.0
-        control = torch.stack([control for _ in range(num_images)], dim=0)
-        control = einops.rearrange(control, 'b h w c -> b c h w').clone()
-        
+        control = resize_image(HWC3(controlnet_conditioning_image), image_resolution)
         mask = resize_image(HWC3(mask_image), image_resolution)
 
         print(f"img shape:{img.shape}, mask shape:{mask.shape}, control shape: {control.shape}")
