@@ -14,6 +14,8 @@ from diffusers import (ControlNetModel, DiffusionPipeline,
                        UniPCMultistepScheduler,
                        EulerAncestralDiscreteScheduler)
 
+import textual_inversion_fix # hopefully
+
 CONTROLNET_MODEL_IDS = {
     'Openpose': 'lllyasviel/control_v11p_sd15_openpose',
     'canny': 'lllyasviel/control_v11p_sd15_canny',
@@ -58,7 +60,7 @@ class Model:
             torch_dtype=torch.float16,
             custom_pipeline="stable_diffusion_controlnet_inpaint_img2img")
         
-        pipe.load_textual_inversion("charturnerv2.pt", token="charturnerv2")
+        textual_inversion_fix.load_textual_inversion("charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
         #if self.device.type == 'cuda':
