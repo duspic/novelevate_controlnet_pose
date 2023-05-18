@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 from diffusers.utils import DIFFUSERS_CACHE, HF_HUB_OFFLINE, is_safetensors_available, is_transformers_available, _get_model_file, logging
 from transformers import PreTrainedTokenizer, PreTrainedModel
+import torch
 
 TEXT_INVERSION_NAME = "learned_embeds.bin"
 TEXT_INVERSION_NAME_SAFE = "learned_embeds.safetensors"
