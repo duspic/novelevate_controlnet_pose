@@ -34,13 +34,14 @@ CONTROLNET_MODEL_IDS = {
 # TODO different model
 config_dict = {
     'Uminosachi/dreamshaper_5-inpainting': 'lllyasviel/control_v11p_sd15_openpose',
-    'ducnapa/children_stories_inpainting': 'lllyasviel/control_v11p_sd15_openpose'
+    'ducnapa/children_stories_inpainting': 'lllyasviel/control_v11p_sd15_openpose',
+    './models/': 'lllyasviel/control_v11p_sd15_openpose'
 }
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'ducnapa/children_stories_inpainting',
+                 base_model_id: str = 'Uminosachi/dreamshaper_5-inpainting',
                  task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
