@@ -35,7 +35,6 @@ CONTROLNET_MODEL_IDS = {
 config_dict = {
     'Uminosachi/dreamshaper_5-inpainting': 'lllyasviel/control_v11p_sd15_openpose',
     'ducnapa/children_stories_inpainting': 'lllyasviel/control_v11p_sd15_openpose',
-    './models/': 'lllyasviel/control_v11p_sd15_openpose'
 }
 
 
