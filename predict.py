@@ -13,7 +13,7 @@ import numpy as np
 
 class Predictor(BasePredictor):
     def setup(self):
-       self.model = Model(base_model_id='ducnapa/children_stories_inpaint')
+       self.model = Model(base_model_id='ducnapa/children_stories_inpainting')
 
     def predict(
         self,
