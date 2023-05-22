@@ -31,16 +31,15 @@ CONTROLNET_MODEL_IDS = {
     'ip2p': 'lllyasviel/control_v11e_sd15_ip2p',
     'inpaint': 'lllyasviel/control_v11e_sd15_inpaint',
 }
-# TODO different model
 config_dict = {
     'Uminosachi/dreamshaper_5-inpainting': 'lllyasviel/control_v11p_sd15_openpose',
-    'ducnapa/children_stories_inpainting': 'lllyasviel/control_v11p_sd15_openpose',
+    'ducnapa/novelevate_inpainting_charturner': 'lllyasviel/control_v11p_sd15_openpose',
 }
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'Uminosachi/dreamshaper_5-inpainting',
+                 base_model_id: str = 'ducnapa/novelevate_inpainting_charturner',
                  task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
