@@ -14,7 +14,7 @@ from diffusers import (ControlNetModel, DiffusionPipeline,
                        UniPCMultistepScheduler,
                        EulerAncestralDiscreteScheduler)
 
-import textual_inversion_fix # hopefully
+import textual_inversion_fix
 
 CONTROLNET_MODEL_IDS = {
     'Openpose': 'lllyasviel/control_v11p_sd15_openpose',
