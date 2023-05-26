@@ -14,7 +14,7 @@ def make_mask() -> Image.Image:
   res = Image.new('RGBA', (1024,512), color=0)
   white = Image.new('RGBA', (256,512), color=255)
 
-  res.paste(white, box=(256,0))
+  res.paste(white, box=(512,0))
   return res
 
 
@@ -32,4 +32,4 @@ def scale_for_sheet(img: Image.Image) -> Image.Image:
 
 
 def extract_char(res: Image.Image) -> Image.Image:
-  return res.crop((256,0,512,512))
+  return res.crop((512,0,768,512))
