@@ -8,11 +8,11 @@ def make_sheet(img: Image.Image, color: int=255) -> Image.Image:
   for i in range(4):
     res.paste(img, box=(i*256 + w_offset,h_offset))
 
-  return res
+  return res.convert('RGB')
 
 def make_mask() -> Image.Image:
-  res = Image.new('RGBA', (1024,512), color=0)
-  white = Image.new('RGBA', (256,512), color=255)
+  res = Image.new('RGB', (1024,512), color=0)
+  white = Image.new('RGB', (256,512), color=255)
 
   res.paste(white, box=(512,0))
   return res
