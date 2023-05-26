@@ -1,6 +1,0 @@
-cog predict \
-  -i image="https://storage.googleapis.com/remakeable_public/KitchenSink/Untitled%20design%20(1).png" \
-  -i prompt="a wine bottle standing on the sand on a beach in hawaii, during a golden sunset" \
-  -i a_prompt="highly detailed, product photoshoot, e-commerce product image" \
-  -i n_prompt="HDR, high contrast, painting, cartoon, cropped, amputation, sunglasses, blind, deformed" \
-  -i image_resolution=768
