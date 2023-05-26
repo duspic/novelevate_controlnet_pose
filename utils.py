@@ -1,7 +1,7 @@
 from PIL import Image
 
 def make_sheet(img: Image.Image, color: int=255) -> Image.Image:
-  res = Image.new('RGBA', (1024,512),color=color)
+  res = Image.new('RGB', (1024,512),color=color)
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
