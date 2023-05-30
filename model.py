@@ -5,14 +5,11 @@ import gc
 import numpy as np
 import PIL.Image
 import torch
-import cv2
-import einops
-from transformers import AutoModel
 from annotator.util import resize_image, HWC3
 from diffusers import (ControlNetModel, DiffusionPipeline,
-                       StableDiffusionControlNetPipeline,
                        UniPCMultistepScheduler,
                        EulerAncestralDiscreteScheduler)
+from diffusers.models import AutoencoderKL
 
 import textual_inversion_fix
 
@@ -31,16 +28,16 @@ CONTROLNET_MODEL_IDS = {
     'ip2p': 'lllyasviel/control_v11e_sd15_ip2p',
     'inpaint': 'lllyasviel/control_v11e_sd15_inpaint',
 }
-config_dict = {
-    'Uminosachi/dreamshaper_5-inpainting': 'lllyasviel/control_v11p_sd15_openpose',
-    'ducnapa/novelevate_inpainting_charturner': 'lllyasviel/control_v11p_sd15_openpose',
-    'saik0s/realistic_vision_inpainting':'lllyasviel/control_v11p_sd15_openpose'
-}
+remember_the_models = [
+    'Uminosachi/dreamshaper_5-inpainting',
+    'ducnapa/novelevate_inpainting_charturner',
+    'saik0s/realistic_vision_inpainting',
+    'SG161222/Realistic_Vision_V2.0']
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'saik0s/realistic_vision_inpainting',
+                 base_model_id: str = 'SG161222/Realistic_Vision_V2.0',
                  task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -53,13 +50,15 @@ class Model:
                 self, 'pipe') and self.pipe is not None:
             return self.pipe
 
-        controlnet = ControlNetModel.from_pretrained(config_dict[base_model_id])
+        controlnet = ControlNetModel.from_pretrained("lllyasviel/control_v11p_sd15_openpose")
         pipe = DiffusionPipeline.from_pretrained(
             base_model_id,
             controlnet=controlnet,
             safety_checker=None,
             torch_dtype=torch.float16,
-            custom_pipeline="stable_diffusion_controlnet_inpaint_img2img")
+            custom_pipeline="stable_diffusion_controlnet_inpaint_img2img",
+            vae=AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-ema")
+            )
         
         textual_inversion_fix.load_textual_inversion(pipe, "charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
