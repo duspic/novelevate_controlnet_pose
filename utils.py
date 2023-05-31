@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 
 def make_sheet(img: Image.Image, color: int=255) -> Image.Image:
   res = Image.new('RGBA', (1024,512),color=(color,color,color,color))
@@ -18,11 +18,15 @@ def make_mask() -> Image.Image:
   return res
 
 
-def scale_for_sheet(img: Image.Image) -> Image.Image:
+def scale_for_sheet(img: Image.Image, invert=False) -> Image.Image:
   maxwidth = 256
-  im_crop = img.crop(img.getbbox())
+  
+  if invert:
+    im_crop = img.crop(invert_color(img).getbbox())
+  else:
+    im_crop = img.crop(img.getbbox())
+ 
   w,h = im_crop.size
-
   if w > maxwidth:
     ratio = maxwidth/w
     h = int(ratio*h)
@@ -33,3 +37,14 @@ def scale_for_sheet(img: Image.Image) -> Image.Image:
 
 def extract_char(res: Image.Image) -> Image.Image:
   return res.crop((512,0,768,512))
+
+
+def invert_color(img: Image.Image) -> Image:
+  if img.mode == "RGBA":
+    r,g,b,a = img.split()
+    rgb_image = Image.merge('RGB', (r,g,b))
+    inverted_image = ImageOps.invert(rgb_image)
+    r2,g2,b2 = inverted_image.split()
+    return Image.merge('RGBA', (r2,g2,b2,a))
+  
+  return ImageOps.invert(img)
