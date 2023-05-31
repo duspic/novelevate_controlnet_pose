@@ -1,11 +1,13 @@
 from PIL import Image, ImageOps
 
-def make_sheet(img: Image.Image, color: int=255) -> Image.Image:
+def make_sheet(img: Image.Image, color: int=255, skip_third=False) -> Image.Image:
   res = Image.new('RGBA', (1024,512),color=(color,color,color,color))
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
   for i in range(4):
+    if i==2 and skip_third:
+      continue
     res.paste(img, mask=img, box=(i*256 + w_offset,h_offset))
 
   return res.convert('RGB')
