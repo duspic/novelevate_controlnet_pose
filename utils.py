@@ -1,19 +1,19 @@
 from PIL import Image, ImageOps
 
-def make_sheet(img: Image.Image, color: int=255, skip_third=False) -> Image.Image:
-  res = Image.new('RGBA', (1024,512),color=(color,color,color,color))
+def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=3) -> Image.Image:
+  res = Image.new('RGBA', (len*256,512),color=(color,color,color,color))
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
-  for i in range(4):
+  for i in range(3):
     if i==2 and skip_third:
       continue
     res.paste(img, mask=img, box=(i*256 + w_offset,h_offset))
 
   return res.convert('RGB')
 
-def make_mask() -> Image.Image:
-  res = Image.new('RGB', (1024,512), color=(0,0,0))
+def make_mask(len=3) -> Image.Image:
+  res = Image.new('RGB', (len*256,512), color=(0,0,0))
   white = Image.new('RGB', (256,512), color=(255,255,255))
 
   res.paste(white, box=(512,0))
