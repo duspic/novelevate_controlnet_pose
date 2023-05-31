@@ -59,7 +59,7 @@ class Model:
             controlnet=controlnet,
             safety_checker=None,
             torch_dtype=torch.float16,
-            custom_pipeline="stable_diffusion_controlnet_inpaint_img2img")
+            custom_pipeline="stable_diffusion_controlnet_inpaint")
         
         textual_inversion_fix.load_textual_inversion(pipe, "charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
