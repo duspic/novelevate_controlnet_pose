@@ -81,6 +81,6 @@ class Predictor(BasePredictor):
         #outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
         #return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
 
-        res = [outputs[0], utils.extract_char(outputs[0], mask_img, pose_img)]
+        res = [outputs[0], utils.extract_char(outputs[0]), mask_img, pose_img]
         res = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(res)]
         return [Path(f"./tmp/output_{i}.png") for i in range(len(res))]
