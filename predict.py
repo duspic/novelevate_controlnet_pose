@@ -43,25 +43,25 @@ class Predictor(BasePredictor):
         input_img = Image.open(image)
         input_img = utils.scale_for_sheet(input_img)
         input_img = utils.make_sheet(input_img)
-        input_img = np.array(input_img)
+        input_img_np = np.array(input_img)
         
         pose_img = Image.open(controlnet_pose_image)
         pose_img = utils.scale_for_sheet(pose_img)
         pose_img = utils.make_sheet(pose_img, 0)
-        pose_img = np.array(pose_img)  
+        pose_img_np = np.array(pose_img)  
         
         mask_img = utils.make_mask()
-        mask_img = np.array(mask_img)
+        mask_img_np = np.array(mask_img)
 
-        if not input_img.shape == pose_img.shape == mask_img.shape:
+        if not input_img_np.shape == pose_img_np.shape == mask_img_np.shape:
             raise ValueError(f"""The mask, pose and input image must have the same shape
-                             input_img{input_img.shape}, pose_img{pose_img.shape}, mask_img{mask_img.shape}
+                             input_img{input_img_np.shape}, pose_img{pose_img_np.shape}, mask_img{mask_img_np.shape}
                              """)
         
         outputs = self.model.process_openpose(
-            image=input_img,
-            mask_image=mask_img,
-            controlnet_conditioning_image=pose_img,
+            image=input_img_np,
+            mask_image=mask_img_np,
+            controlnet_conditioning_image=pose_img_np,
             prompt=prompt,
             additional_prompt=a_prompt,
             negative_prompt=n_prompt,
@@ -77,6 +77,10 @@ class Predictor(BasePredictor):
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
         
-        outputs = [utils.extract_char(output) for output in outputs]
-        outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
-        return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
+        #outputs = [utils.extract_char(output) for output in outputs]
+        #outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
+        #return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
+
+        res = [outputs[0], utils.extract_char(outputs[0], mask_img, pose_img)]
+        res = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(res)]
+        return [Path(f"./tmp/output_{i}.png") for i in range(len(res))]
