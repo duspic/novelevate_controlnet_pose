@@ -142,7 +142,7 @@ class Model:
             num_images_per_prompt=num_images_per_prompt,
             controlnet_conditioning_scale=controlnet_conditioning_scale,
             generator=generator,
-            strength=strength
+            #strength=strength
             ).images
 
     @torch.inference_mode()
