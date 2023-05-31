@@ -1,6 +1,6 @@
 from PIL import Image, ImageOps
 
-def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=5) -> Image.Image:
+def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=4) -> Image.Image:
   res = Image.new('RGBA', (len*256,512),color=(color,color,color,color))
   w,h = img.size
   h_offset = int((512-h)/2)
@@ -12,7 +12,7 @@ def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=5) -> Ima
 
   return res.convert('RGB')
 
-def make_mask(len=5) -> Image.Image:
+def make_mask(len=4) -> Image.Image:
   res = Image.new('RGB', (len*256,512), color=(0,0,0))
   white = Image.new('RGB', (256,512), color=(255,255,255))
 
