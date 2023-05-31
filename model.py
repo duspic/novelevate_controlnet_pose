@@ -32,13 +32,12 @@ remember_the_models = [
     'Uminosachi/dreamshaper_5-inpainting',
     'ducnapa/novelevate_inpainting_charturner',
     'saik0s/realistic_vision_inpainting',
-    'ducnapa/LifeLikeDiffusion_inpainting'
     ]
 
 
 class Model:
     def __init__(self,
-                 base_model_id: str = 'ducnapa/LifeLikeDiffusion_inpainting',
+                 base_model_id: str = 'saik0s/realistic_vision_inpainting',
                  task_name: str = 'Openpose'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
