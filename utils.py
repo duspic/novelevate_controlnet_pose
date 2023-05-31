@@ -5,7 +5,7 @@ def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=5) -> Ima
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
-  for i in range(3):
+  for i in range(len):
     if i==2 and skip_third:
       continue
     res.paste(img, mask=img, box=(i*256 + w_offset,h_offset))
