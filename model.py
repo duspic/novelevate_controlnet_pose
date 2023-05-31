@@ -64,8 +64,8 @@ class Model:
         textual_inversion_fix.load_textual_inversion(pipe, "charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
-        if self.device.type == 'cuda':
-            pipe.enable_xformers_memory_efficient_attention()
+        #if self.device.type == 'cuda':
+        #    pipe.enable_xformers_memory_efficient_attention()
         pipe.to(self.device)
         torch.cuda.empty_cache()
         gc.collect()
