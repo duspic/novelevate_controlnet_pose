@@ -1,13 +1,11 @@
 from PIL import Image, ImageOps
 
-def make_sheet(img: Image.Image, color: int=255, skip_third=False, len=4) -> Image.Image:
+def make_pose_sheet(img: Image.Image, color: int=255, len=4) -> Image.Image:
   res = Image.new('RGBA', (len*256,512),color=(color,color,color,color))
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
   for i in range(len):
-    if i==2 and skip_third:
-      continue
     res.paste(img, mask=img, box=(i*256 + w_offset,h_offset))
 
   return res.convert('RGB')
@@ -50,3 +48,33 @@ def invert_color(img: Image.Image) -> Image:
     return Image.merge('RGBA', (r2,g2,b2,a))
   
   return ImageOps.invert(img)
+
+
+def make_character_sheet(img: Image.Image, len=4) -> Image.Image:
+    res = Image.new('RGBA', (len*256,512),color=(255,255,255,255))
+    w,h = img.size
+    
+    # first scramble
+    img2 = img.resize((w*2,h*2))
+    img2 = img2.crop((3*w//4,0,6*w//4,h))
+    w2,h2 = img2.size
+    h_offset = int((512-h2)/2)
+    w_offset = int((256-w2)/2)
+    res.paste(img2, mask=img2, box=(w_offset,h_offset))
+
+    # second scramble
+    img2 = img.resize((w*2//3, h*2//3))
+    w2,h2 = img2.size
+    h_offset = int((512-h2)/2)
+    w_offset = int((256-w2)/2)
+    img2 = img2.transpose(Image.FLIP_LEFT_RIGHT)
+    res.paste(img2, mask=img2, box=(256+w_offset,h_offset))
+
+    # leave room at third place
+    # paste regular image at fourth
+    
+    h_offset = int((512-h)/2)
+    w_offset = int((256-w)/2)
+    res.paste(img, mask=img, box=(768+w_offset,h_offset))
+    
+    return res.convert('RGB')
