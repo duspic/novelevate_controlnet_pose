@@ -19,20 +19,10 @@ def make_mask(len=4) -> Image.Image:
 
 
 def scale_for_sheet(img: Image.Image, invert=False) -> Image.Image:
-  maxwidth = 256
-  
-  if invert:
-    im_crop = img.crop(invert_color(img).getbbox())
-  else:
-    im_crop = img.crop(img.getbbox())
- 
-  w,h = im_crop.size
-  if w > maxwidth:
-    ratio = maxwidth/w
-    h = int(ratio*h)
-    return im_crop.resize((256,h))
-
-  return im_crop
+  maxwidth = 256 
+  w,h = img.size
+  ratio = maxwidth/w
+  return img.resize((256,int(ratio*h)))
 
 
 def extract_char(res: Image.Image) -> Image.Image:
@@ -56,14 +46,15 @@ def make_character_sheet(img: Image.Image, len=4) -> Image.Image:
     
     # first scramble
     img2 = img.resize((w*2,h*2))
-    img2 = img2.crop((3*w//4,0,6*w//4,h))
+    img2 = img2.crop((3*w//4,0,7*w//4,h))
     w2,h2 = img2.size
+    print(w2,h2)
     h_offset = int((512-h2)/2)
     w_offset = int((256-w2)/2)
     res.paste(img2, mask=img2, box=(w_offset,h_offset))
 
     # second scramble
-    img2 = img.resize((w*2//3, h*2//3))
+    img2 = img.resize((w*3//4, h*3//4))
     w2,h2 = img2.size
     h_offset = int((512-h2)/2)
     w_offset = int((256-w2)/2)
