@@ -43,7 +43,7 @@ class Predictor(BasePredictor):
         input_img = Image.open(image)
         input_img = utils.scale_for_sheet(input_img)
         #input_img = utils.make_sheet(input_img, skip_third=True)
-        input_img = Image.open("fake_sheet.png")
+        input_img = Image.open("fake_sheet.png").convert('RGB')
         input_img_np = np.array(input_img)
         
         pose_img = Image.open(controlnet_pose_image)
