@@ -16,8 +16,8 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        image: Path = Input(description="Input image"),
-        controlnet_pose_image: Path = Input(description="Openpose image with pose to generate"),
+        #image: Path = Input(description="Input image"),
+        #controlnet_pose_image: Path = Input(description="Openpose image with pose to generate"),
         prompt: str = Input(description="Prompt for the model"),
         a_prompt: str = Input(description="Additional text to be appended to prompt", default="""character turnaround on white background, different poses, multiple views of the same character, clean white background"""),
         n_prompt: str = Input(description="Negative Prompt", default="""different character, different clothes, ugly, deformed, nsfw"""),
@@ -39,8 +39,12 @@ class Predictor(BasePredictor):
 
     ) -> List[Path]:
         """Run a single prediction on the model"""
+        input_img = Image.open("character.png").convert("RGBA")
+        input_img_np = np.array(input_img)
+        pose_img = Image.open("poze.png").convert("RGBA")
+        pose_img_np = np.array(pose_img)
         
-        input_img = Image.open(image)
+        """input_img = Image.open(image)
         input_img = utils.scale_for_sheet(input_img)
         input_img = utils.make_character_sheet(input_img)
         input_img_np = np.array(input_img)
@@ -49,7 +53,7 @@ class Predictor(BasePredictor):
         pose_img = utils.scale_for_sheet(pose_img, True).convert('RGBA')
         pose_img.putalpha(255)
         pose_img = utils.make_pose_sheet(pose_img)
-        pose_img_np = np.array(pose_img)  
+        pose_img_np = np.array(pose_img)"""
         
         mask_img = utils.make_mask()
         mask_img_np = np.array(mask_img)
