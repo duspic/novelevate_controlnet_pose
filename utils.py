@@ -48,18 +48,24 @@ def make_character_sheet(img: Image.Image, len=4) -> Image.Image:
     img2 = img.resize((w*2,h*2))
     img2 = img2.crop((3*w//4,0,7*w//4,h))
     w2,h2 = img2.size
-    print(w2,h2)
     h_offset = int((512-h2)/2)
     w_offset = int((256-w2)/2)
     res.paste(img2, mask=img2, box=(w_offset,h_offset))
 
-    # second scramble
-    img2 = img.resize((w*3//4, h*3//4))
+    # paste regular image at second place
+    
+    h_offset = int((512-h)/2)
+    w_offset = int((256-w)/2)
+    img2 = img.transpose(Image.FLIP_LEFT_RIGHT)
+    res.paste(img2, mask=img2, box=(256+w_offset,h_offset))
+
+    """# second scramble
+    img2 = img.resize((w*3, h*3))
     w2,h2 = img2.size
     h_offset = int((512-h2)/2)
     w_offset = int((256-w2)/2)
     img2 = img2.transpose(Image.FLIP_LEFT_RIGHT)
-    res.paste(img2, mask=img2, box=(256+w_offset,h_offset))
+    res.paste(img2, mask=img2, box=(256+w_offset,h_offset))"""
 
     # leave room at third place
     # paste regular image at fourth
