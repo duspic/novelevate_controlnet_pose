@@ -41,7 +41,7 @@ class Predictor(BasePredictor):
         """Run a single prediction on the model"""
         input_img = Image.open("character_.png").convert("RGB")
         input_img_np = np.array(input_img)
-        pose_img = Image.open("poze.png").convert("RGB")
+        pose_img = Image.open("poze_1.png").convert("RGB")
         pose_img_np = np.array(pose_img)
         
         """input_img = Image.open(image)
