@@ -39,53 +39,44 @@ class Predictor(BasePredictor):
 
     ) -> List[Path]:
         """Run a single prediction on the model"""
-        input_img = Image.open("character_.png").convert("RGB")
-        input_img_np = np.array(input_img)
-        pose_img = Image.open("poze_1.png").convert("RGB")
-        pose_img_np = np.array(pose_img)
-        
-        """input_img = Image.open(image)
-        input_img = utils.scale_for_sheet(input_img)
-        input_img = utils.make_character_sheet(input_img)
-        input_img_np = np.array(input_img)
-        
-        pose_img = Image.open(controlnet_pose_image)
-        pose_img = utils.scale_for_sheet(pose_img, True).convert('RGBA')
-        pose_img.putalpha(255)
-        pose_img = utils.make_pose_sheet(pose_img)
-        pose_img_np = np.array(pose_img)"""
-        
-        mask_img = utils.make_mask()
-        mask_img_np = np.array(mask_img)
-
-        if not input_img_np.shape == pose_img_np.shape == mask_img_np.shape:
-            raise ValueError(f"""The mask, pose and input image must have the same shape
-                             input_img{input_img_np.shape}, pose_img{pose_img_np.shape}, mask_img{mask_img_np.shape}
-                             """)
-        
-        outputs = self.model.process_openpose(
-            image=input_img_np,
-            mask_image=mask_img_np,
-            controlnet_conditioning_image=pose_img_np,
-            prompt=prompt,
-            additional_prompt=a_prompt,
-            negative_prompt=n_prompt,
-            num_images=num_images,
-            image_resolution=image_resolution,
-            num_steps=num_steps,
-            seed=seed,
-            strength=strength,
-            controlnet_conditioning_scale=controlnet_strength,
-            guidance_scale=cfg_scale
-        )
-
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
         
-        #outputs = [utils.extract_char(output) for output in outputs]
-        #outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
-        #return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
+        mask_img = utils.make_mask()
+        mask_img_np = np.array(mask_img)
+        pose_img = Image.open(f"pose.png").convert("RGB")
+        pose_img_np = np.array(pose_img)
+        
+        generated = []
+        result = []
 
-        res = [input_img, outputs[0], utils.extract_char(outputs[0]), mask_img, pose_img]
-        res = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(res)]
-        return [Path(f"./tmp/output_{i}.png") for i in range(len(res))]
+        for i in range(1,5):
+            input_img = Image.open(f"sheet_{i}.png").convert("RGB")
+            input_img_np = np.array(input_img)
+            
+            if not input_img_np.shape == pose_img_np.shape == mask_img_np.shape:
+                raise ValueError(f"""The mask, pose and input image must have the same shape
+                                input_img{input_img_np.shape}, pose_img{pose_img_np.shape}, mask_img{mask_img_np.shape}
+                                """)
+        
+            generated += self.model.process_openpose(
+                image=input_img_np,
+                mask_image=mask_img_np,
+                controlnet_conditioning_image=pose_img_np,
+                prompt=prompt,
+                additional_prompt=a_prompt,
+                negative_prompt=n_prompt,
+                num_images=num_images,
+                image_resolution=image_resolution,
+                num_steps=num_steps,
+                seed=seed,
+                strength=strength,
+                controlnet_conditioning_scale=controlnet_strength,
+                guidance_scale=cfg_scale
+            )
+
+        result += generated
+        result.append(pose_img)
+        result = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(result)]
+            
+        return [Path(f"./tmp/output_{i}.png") for i in range(len(result))]
