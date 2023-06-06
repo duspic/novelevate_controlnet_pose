@@ -50,7 +50,7 @@ class Predictor(BasePredictor):
         generated = []
         result = []
 
-        for i in range(1,5):
+        for i in range(1,7):
             input_img = Image.open(f"sheet_{i}.png").convert("RGB")
             input_img_np = np.array(input_img)
             
