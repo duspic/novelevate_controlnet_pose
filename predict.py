@@ -35,7 +35,7 @@ class Predictor(BasePredictor):
     ) -> List[Path]:
         """Run a single prediction on the model"""
 
-        input_img = Image.open(image)
+        input_img = Image.open(image).convert('RGB')
         #input_img = utils.scale_for_sheet(input_img)
         #input_img = utils.make_sheet(input_img, skip_third=True)
         input_img_np = np.array(input_img)
