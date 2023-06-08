@@ -12,7 +12,7 @@ class Predictor(BasePredictor):
        self.model = Model()
     def predict(
         self,
-        image: Path = Input(description="Input image"),
+        image: Path = Input(description="Input image, front back and portrait combined"),
         controlnet_pose_image: Path = Input(description="Openpose image with pose to generate"),
         prompt: str = Input(description="Prompt for the model"),
         a_prompt: str = Input(description="Additional text to be appended to prompt", default="""character turnaround on white background, different poses, multiple views of the same character, clean white background"""),
@@ -37,7 +37,7 @@ class Predictor(BasePredictor):
 
         input_img = Image.open(image)
         input_img = utils.scale_for_sheet(input_img)
-        input_img = utils.make_sheet(input_img, skip_third=True)
+        #input_img = utils.make_sheet(input_img, skip_third=True)
         input_img_np = np.array(input_img)
 
         pose_img = Image.open(controlnet_pose_image)
