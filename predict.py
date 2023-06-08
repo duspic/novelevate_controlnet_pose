@@ -14,9 +14,9 @@ class Predictor(BasePredictor):
         self,
         image: Path = Input(description="Input image, front back and portrait combined"),
         controlnet_pose_image: Path = Input(description="Openpose image with pose to generate"),
-        prompt: str = Input(description="Prompt for the model"),
-        a_prompt: str = Input(description="Additional text to be appended to prompt", default="""character turnaround on white background, different poses, multiple views of the same character, clean white background"""),
-        n_prompt: str = Input(description="Negative Prompt", default="""different character, different clothes, ugly, deformed, nsfw"""),
+        prompt: str = Input(description="Short description ('boy' or 'girl' will suffice)"),
+        a_prompt: str = Input(description="Additional text to be appended to prompt", default="""same outfit, same hair, same face, consistent, same clothes, different poses, innocent, child"""),
+        n_prompt: str = Input(description="Negative Prompt", default="""NSFW, mutated hands and fingers, deformed, distorted, disfigured, bad anatomy, wrong anatomy, extra limb, different clothes, different hair, missing limb, floating limbs, disconnected limbs, ugly, disgusting, amputation"""),
         num_images: int = Input(description="Number of samples (higher values may OOM)",
             choices=['1', '2', '3', '4'],
             default='1'
