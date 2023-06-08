@@ -71,9 +71,9 @@ class Predictor(BasePredictor):
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
         
-        #outputs = [utils.extract_char(output) for output in outputs]
-        #outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
-        #return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
-        res = [input_img, outputs[0], utils.extract_char(outputs[0]), mask_img, pose_img]
-        res = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(res)]
-        return [Path(f"./tmp/output_{i}.png") for i in range(len(res))]
+        outputs = [utils.extract_char(output) for output in outputs]
+        outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
+        return [Path(f"./tmp/output_{i}.png") for i in range(len(outputs))]
+        #res = [input_img, outputs[0], utils.extract_char(outputs[0]), mask_img, pose_img]
+        #res = [img.save(f"tmp/output_{i}.png") for i, img in enumerate(res)]
+        #return [Path(f"./tmp/output_{i}.png") for i in range(len(res))]
