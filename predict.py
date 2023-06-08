@@ -43,7 +43,7 @@ class Predictor(BasePredictor):
         pose_img = Image.open(controlnet_pose_image)
         pose_img = utils.scale_for_sheet(pose_img).convert('RGBA')
         pose_img.putalpha(255)
-        pose_img = utils.make_sheet(pose_img, 0)
+        pose_img = utils.make_sheet(pose_img, 0, onlythird=True)
         pose_img_np = np.array(pose_img)  
         
         mask_img = utils.make_mask()

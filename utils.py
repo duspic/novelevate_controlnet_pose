@@ -1,13 +1,17 @@
 from PIL import Image
 
-def make_sheet(img: Image.Image, color: int=255) -> Image.Image:
+def make_sheet(img: Image.Image, color: int=255, onlythird: bool=False) -> Image.Image:
   res = Image.new('RGBA', (1024,512),color=(color,color,color,color))
   w,h = img.size
   h_offset = int((512-h)/2)
   w_offset = int((256-w)/2)
+
+  if onlythird:
+    res.paste(img, mask=img, box=(512+w_offset, h_offset))
+    return res.convert('RGB')
+
   for i in range(4):
     res.paste(img, mask=img, box=(i*256 + w_offset,h_offset))
-
   return res.convert('RGB')
 
 def make_mask() -> Image.Image:
