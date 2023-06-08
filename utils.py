@@ -19,16 +19,10 @@ def make_mask() -> Image.Image:
 
 
 def scale_for_sheet(img: Image.Image) -> Image.Image:
-  maxwidth = 256
-  im_crop = img.crop(img.getbbox())
-  w,h = im_crop.size
-
-  if w > maxwidth:
-    ratio = maxwidth/w
-    h = int(ratio*h)
-    return im_crop.resize((256,h))
-
-  return im_crop
+  maxwidth = 256 
+  w,h = img.size
+  ratio = maxwidth/w
+  return img.resize((256,int(ratio*h)))
 
 
 def extract_char(res: Image.Image) -> Image.Image:
