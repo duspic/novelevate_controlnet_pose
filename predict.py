@@ -18,8 +18,8 @@ class Predictor(BasePredictor):
         a_prompt: str = Input(description="Additional text to be appended to prompt", default="""same outfit, same hair, same face, consistent, same clothes, different poses, innocent, child"""),
         n_prompt: str = Input(description="Negative Prompt", default="""NSFW, mutated hands and fingers, deformed, distorted, disfigured, bad anatomy, wrong anatomy, extra limb, different clothes, different hair, missing limb, floating limbs, disconnected limbs, ugly, disgusting, amputation"""),
         num_images: int = Input(description="Number of samples (higher values may OOM)",
-            choices=['1', '2', '3', '4'],
-            default='1'
+            choices=[1,2,3,4],
+            default=1
         ),
         image_resolution: str = Input(
             description="Image resolution to be generated",
@@ -27,10 +27,10 @@ class Predictor(BasePredictor):
             default='512'
         ),
         num_steps: int = Input(description="Steps", default=45),
-        cfg_scale: float = Input(description="Scale for classifier-free guidance", default=10.0, ge=0.1, le=30.0),
+        cfg_scale: float = Input(description="Scale for classifier-free guidance", default=15.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
         strength: float = Input(description="How much noise between 0.0 and 1.0", default=1.0),
-        controlnet_strength: float = Input(description="How much to follow controlnet between 0.0 and 2.0", default=1.7)
+        controlnet_strength: float = Input(description="How much to follow controlnet between 0.0 and 2.0", default=0.5)
         
     ) -> List[Path]:
         """Run a single prediction on the model"""
