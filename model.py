@@ -23,6 +23,7 @@ class Model:
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self.base_model_id = ''
         self.pipe = self.load_pipe(base_model_id)
+        self.lora_id = "ducnapa/childbook"
 
     def load_pipe(self, base_model_id: str) -> StableDiffusionControlNetInpaintPipeline:
         if base_model_id == self.base_model_id and hasattr(
@@ -43,7 +44,7 @@ class Model:
             safety_checker=None,
             vae = AutoencoderKL.from_pretrained('bullhug/blessed_vae')
             )
-        
+        pipe.load_lora_weights(self.lora_id, weight_name="model.safetensors")
         pipe.load_textual_inversion("charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
