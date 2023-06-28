@@ -134,7 +134,7 @@ class Model:
         self,
         image: np.ndarray,
         mask_image: np.ndarray,
-        controlnet_conditioning_image: np.ndarray,
+        control_image: np.ndarray,
         prompt: str,
         additional_prompt: str,
         negative_prompt: str,
@@ -147,7 +147,7 @@ class Model:
         controlnet_conditioning_scale: List[float],
     ) -> list[PIL.Image.Image]:
         img = resize_image(HWC3(image), image_resolution)
-        pose = resize_image(HWC3(controlnet_conditioning_image), image_resolution)
+        pose = resize_image(HWC3(control_image), image_resolution)
         mask = resize_image(HWC3(mask_image), image_resolution)
 
         H, W, _ = img.shape
