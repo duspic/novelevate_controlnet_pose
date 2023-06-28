@@ -58,7 +58,7 @@ class Predictor(BasePredictor):
         outputs = self.model.process_openpose(
             image=input_img_np,
             mask_image=mask_img_np,
-            control_image=pose_img,
+            control_image=pose_img_np,
             prompt=prompt,
             additional_prompt=a_prompt,
             negative_prompt=n_prompt,
