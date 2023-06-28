@@ -22,8 +22,9 @@ class Model:
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self.base_model_id = ''
-        self.pipe = self.load_pipe(base_model_id)
         self.lora_id = "ducnapa/childbook"
+        self.pipe = self.load_pipe(base_model_id)
+        
 
     def load_pipe(self, base_model_id: str) -> StableDiffusionControlNetInpaintPipeline:
         if base_model_id == self.base_model_id and hasattr(
