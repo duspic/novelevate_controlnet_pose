@@ -157,7 +157,7 @@ class Model:
         mask = PIL.Image.fromarray(mask)
         inpaint_img = make_inpaint_condition(img, mask)
         
-        self.load_controlnet_weight('Openpose')
+        self.load_controlnet_weight()
         results = self.run_pipe(
             prompt=f"charturnerv2, {prompt}, {additional_prompt}",
             image=img,
