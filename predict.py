@@ -21,16 +21,17 @@ class Predictor(BasePredictor):
             choices=[1,2,3,4],
             default=1
         ),
-        image_resolution: str = Input(
-            description="Image resolution to be generated",
-            choices = ['256', '512', '768'],
-            default='512'
+        image_resolution: int = Input(
+            description="Image resolution to be generated- ONLY HERE FOR LATER",
+            choices = [512],
+            default = 512
         ),
         num_steps: int = Input(description="Steps", default=45),
         cfg_scale: float = Input(description="Scale for classifier-free guidance", default=15.0, ge=0.1, le=30.0),
         seed: int = Input(description="Seed", default=-1),
         strength: float = Input(description="How much noise between 0.0 and 1.0", default=1.0),
-        controlnet_strength: float = Input(description="How much to follow controlnet between 0.0 and 2.0", default=0.5)
+        pose_strength: float = Input(description="How much to follow pose between 0.0 and 2.0", default=0.5),
+        inpaint_strength: float = Input(description="Inpaint variable between 0.0 and 2.0", default=1.0)
         
     ) -> List[Path]:
         """Run a single prediction on the model"""
@@ -48,6 +49,7 @@ class Predictor(BasePredictor):
         
         mask_img = utils.make_mask()
         mask_img_np = np.array(mask_img)
+        
         if not input_img_np.shape == pose_img_np.shape == mask_img_np.shape:
             raise ValueError(f"""The mask, pose and input image must have the same shape
                              input_img{input_img_np.shape}, pose_img{pose_img_np.shape}, mask_img{mask_img_np.shape}
@@ -56,7 +58,7 @@ class Predictor(BasePredictor):
         outputs = self.model.process_openpose(
             image=input_img_np,
             mask_image=mask_img_np,
-            controlnet_conditioning_image=pose_img_np,
+            control_image=pose_img,
             prompt=prompt,
             additional_prompt=a_prompt,
             negative_prompt=n_prompt,
@@ -65,7 +67,7 @@ class Predictor(BasePredictor):
             num_steps=num_steps,
             seed=seed,
             strength=strength,
-            controlnet_conditioning_scale=controlnet_strength,
+            controlnet_conditioning_scale=[pose_strength, inpaint_strength],
             guidance_scale=cfg_scale
         )
         if not os.path.exists("tmp"):
