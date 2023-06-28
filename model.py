@@ -9,7 +9,7 @@ import torch
 from transformers import AutoModel
 from annotator.util import resize_image, HWC3
 from diffusers import (ControlNetModel, StableDiffusionControlNetInpaintPipeline,
-                       EulerAncestralDiscreteScheduler)
+                       EulerAncestralDiscreteScheduler, AutoencoderKL)
 
 from typing import Union, List
 from utils import make_inpaint_condition
@@ -40,7 +40,8 @@ class Model:
             "ducnapa/cute-cartoon-illustration",
             controlnet=controlnet,
             torch_dtype=torch.float16,
-            safety_checker=None
+            safety_checker=None,
+            vae = AutoencoderKL.from_pretrained('bullhug/blessed_vae')
             )
         
         pipe.load_textual_inversion("charturnerv2.pt", token="charturnerv2")
