@@ -27,7 +27,7 @@ build:
     - "einops==0.6.0"
     - "transformers==4.28.1"
     - "open_clip_torch==2.11.1"
-    - "diffusers==0.16.1"
+    - "diffusers==0.17.0"
     - "opencv-utils==0.0.2"
     - "accelerate"
     #- "xformers"
