@@ -45,7 +45,8 @@ class Model:
             safety_checker=None,
             vae = AutoencoderKL.from_pretrained('bullhug/blessed_vae')
             )
-        pipe.load_lora_weights(self.lora_id, weight_name="model.safetensors")
+        # forget lora for now, something's not right with this
+        #pipe.load_lora_weights(self.lora_id, weight_name="model.safetensors")
         pipe.load_textual_inversion("charturnerv2.pt", token="charturnerv2")
         pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
